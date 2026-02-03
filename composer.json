@@ -1,0 +1,9 @@
+{
+  "name": "donbuche/drupier_demo",
+  "description": "Drupier Demo module for Drupal.",
+  "type": "drupal-module",
+  "license": "proprietary",
+  "require": {
+    "drupal/core": "^10 || ^11"
+  }
+}

@@ -1,0 +1,5 @@
+name: 'Drupier Demo'
+type: module
+description: 'Creates demo menu links and a marquee block.'
+core_version_requirement: ^10 || ^11
+package: Custom

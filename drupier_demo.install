@@ -1,0 +1,124 @@
+<?php
+
+use Drupal\block\Entity\Block;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+/**
+ * Implements hook_install().
+ */
+function drupier_demo_install(): void {
+  $state = \Drupal::state();
+  $menu_link_uuids = [];
+
+  $parent_1 = _drupier_demo_create_menu_link('Menu item 1', NULL, TRUE);
+  $menu_link_uuids[] = $parent_1->uuid();
+  foreach (['Submenu item 1.1', 'Submenu item 1.2', 'Submenu item 1.3'] as $title) {
+    $child = _drupier_demo_create_menu_link($title, $parent_1, FALSE);
+    $menu_link_uuids[] = $child->uuid();
+  }
+
+  $parent_2 = _drupier_demo_create_menu_link('Menu item 2', NULL, TRUE);
+  $menu_link_uuids[] = $parent_2->uuid();
+  foreach (['Submenu item 2.1', 'Submenu item 2.2', 'Submenu item 2.3'] as $title) {
+    $child = _drupier_demo_create_menu_link($title, $parent_2, FALSE);
+    $menu_link_uuids[] = $child->uuid();
+  }
+
+  $parent_3 = _drupier_demo_create_menu_link('Menu item 3', NULL, TRUE);
+  $menu_link_uuids[] = $parent_3->uuid();
+  foreach (['Submenu item 3.1', 'Submenu item 3.2'] as $title) {
+    $child = _drupier_demo_create_menu_link($title, $parent_3, FALSE);
+    $menu_link_uuids[] = $child->uuid();
+  }
+
+  $parent_4 = _drupier_demo_create_menu_link('Menu item 4', NULL, FALSE);
+  $menu_link_uuids[] = $parent_4->uuid();
+
+  $parent_5 = _drupier_demo_create_menu_link('Menu item 5', NULL, FALSE);
+  $menu_link_uuids[] = $parent_5->uuid();
+
+  $state->set('drupier_demo.menu_link_uuids', $menu_link_uuids);
+
+  $theme_handler = \Drupal::service('theme_handler');
+  if ($theme_handler->themeExists('drupier')) {
+    $theme_info = $theme_handler->listInfo();
+    $regions = $theme_info['drupier']->info['regions'] ?? [];
+    if (isset($regions['header_first'])) {
+      $block = Block::create([
+        'id' => 'drupier_demo_marquee_example_block',
+        'plugin' => 'drupier_demo_marquee_example_block',
+        'region' => 'header_first',
+        'theme' => 'drupier',
+        'visibility' => [],
+        'settings' => [
+          'id' => 'drupier_demo_marquee_example_block',
+          'label' => 'Drupier Demo Marquee',
+          'label_display' => '0',
+          'provider' => 'drupier_demo',
+        ],
+        'status' => 1,
+        'weight' => 0,
+      ]);
+      $block->save();
+      $state->set('drupier_demo.block_id', $block->id());
+    }
+    else {
+      \Drupal::logger('drupier_demo')->warning('Block not created because region "header_first" is missing in the "drupier" theme.');
+    }
+  }
+  else {
+    \Drupal::logger('drupier_demo')->warning('Block not created because theme "drupier" is not installed.');
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function drupier_demo_uninstall(): void {
+  $state = \Drupal::state();
+
+  $menu_link_uuids = $state->get('drupier_demo.menu_link_uuids', []);
+  if (!empty($menu_link_uuids)) {
+    $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    foreach ($menu_link_uuids as $uuid) {
+      $entities = $storage->loadByProperties(['uuid' => $uuid]);
+      $entity = reset($entities);
+      if ($entity) {
+        $entity->delete();
+      }
+    }
+  }
+
+  $block_id = $state->get('drupier_demo.block_id');
+  if ($block_id) {
+    $block_storage = \Drupal::entityTypeManager()->getStorage('block');
+    $block = $block_storage->load($block_id);
+    if ($block) {
+      $block->delete();
+    }
+  }
+
+  $state->delete('drupier_demo.menu_link_uuids');
+  $state->delete('drupier_demo.block_id');
+}
+
+/**
+ * Creates a menu link in the main menu.
+ */
+function _drupier_demo_create_menu_link(string $title, ?MenuLinkContent $parent, bool $expanded): MenuLinkContent {
+  $values = [
+    'title' => $title,
+    'link' => ['uri' => 'internal:#'],
+    'menu_name' => 'main',
+    'expanded' => $expanded,
+  ];
+
+  if ($parent) {
+    $values['parent'] = 'menu_link_content:' . $parent->uuid();
+  }
+
+  $menu_link = MenuLinkContent::create($values);
+  $menu_link->save();
+
+  return $menu_link;
+}
