@@ -7,6 +7,11 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
  * Implements hook_install().
  */
 function drupier_demo_install(): void {
+  // Uninstall default `search` module. The module `search_api` will be used instead.
+  if (\Drupal::moduleHandler()->moduleExists('search')) {
+    \Drupal::service('module_installer')->uninstall(['search']);
+  }
+
   $state = \Drupal::state();
   $menu_link_uuids = [];
 
