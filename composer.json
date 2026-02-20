@@ -1,8 +1,14 @@
 {
   "name": "donbuche/drupier_demo",
-  "description": "Drupier Demo module for Drupal.",
+  "description": "A module that creates demo menu links and several blocks for demonstration purposes only.",
   "type": "drupal-module",
-  "license": "proprietary",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Joan Galtés i Moreno",
+      "email": "donbuche@gmail.com"
+    }
+  ],
   "require": {
     "drupal/core": "^10 || ^11",
     "league/commonmark": "^2.4"
