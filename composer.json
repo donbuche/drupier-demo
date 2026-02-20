@@ -4,6 +4,7 @@
   "type": "drupal-module",
   "license": "proprietary",
   "require": {
-    "drupal/core": "^10 || ^11"
+    "drupal/core": "^10 || ^11",
+    "league/commonmark": "^2.4"
   }
 }

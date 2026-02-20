@@ -262,6 +262,40 @@ function drupier_demo_install(): void {
   else {
     \Drupal::logger('drupier_demo')->warning('Block not created because theme "drupier" is not installed.');
   }
+
+  // Place README block on front page.
+  if (isset($regions['content'])) {
+    $block_storage = \Drupal::entityTypeManager()->getStorage('block');
+    $readme_block = $block_storage->load('drupier_demo_readme_block');
+    if (!$readme_block) {
+      $readme_block = Block::create([
+        'id' => 'drupier_demo_readme_block',
+        'plugin' => 'drupier_demo_readme_block',
+        'region' => 'content',
+        'theme' => 'drupier',
+        'visibility' => [
+          'request_path' => [
+            'id' => 'request_path',
+            'pages' => '<front>',
+            'negate' => FALSE,
+          ],
+        ],
+        'settings' => [
+          'id' => 'drupier_demo_readme_block',
+          'label' => 'Drupier README',
+          'label_display' => '0',
+          'provider' => 'drupier_demo',
+        ],
+        'status' => 1,
+        'weight' => -50,
+      ]);
+      $readme_block->save();
+    }
+    $state->set('drupier_demo.readme_block_id', $readme_block->id());
+  }
+  else {
+    \Drupal::logger('drupier_demo')->warning('README block not created because region "content" is missing in the "drupier" theme.');
+  }
 }
 
 /**
@@ -269,6 +303,13 @@ function drupier_demo_install(): void {
  */
 function drupier_demo_uninstall(): void {
   $state = \Drupal::state();
+
+  // Remove README block.
+  $block_storage = \Drupal::entityTypeManager()->getStorage('block');
+  $block = $block_storage->load('drupier_demo_readme_block');
+  if ($block) {
+    $block->delete();
+  }
 
   // Keep social menu items and blocks, but remove demo main menu items.
   $menu_link_uuids = $state->get('drupier_demo.menu_link_uuids', []);
