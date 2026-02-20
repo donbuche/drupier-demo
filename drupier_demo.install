@@ -70,12 +70,10 @@ function drupier_demo_install(): void {
     }
     $attributes = [
       'target' => '_blank',
-      'rel' => 'noopener noreferrer nofollow',
+      'rel' => ['noopener', 'noreferrer', 'nofollow'],
       'title' => $title,
-      'aria-label' => $title,
-      'icon_library' => 'bootstrap_icons',
-      'icon_source' => $icon_markup,
-      'icon_usage' => 'icon_only',
+      'icon' => $icon_markup,
+      'icon_display' => 'icon_only',
     ];
     $link = _drupier_demo_create_menu_link($title, NULL, FALSE, 'social', $attributes, $weight);
     $social_menu_link_uuids[] = $link->uuid();
