@@ -40,11 +40,11 @@ function drupier_demo_help(string $route_name, RouteMatchInterface $route_match)
     ],
     'commands' => [
       '#type' => 'markup',
-      '#markup' => '<h2>Disable and uninstall</h2><p>Disable the module with Drush:</p><pre><code>drush pm:uninstall drupier_demo -y</code></pre><p>Remove it from codebase with Composer:</p><pre><code>composer remove drupier_demo</code></pre>',
+      '#markup' => '<h2>Disable and uninstall</h2><p>Disable the module with Drush:</p><pre><code>drush pm:uninstall drupier_demo -y</code></pre><p>Remove it from codebase with Composer:</p><pre><code>composer remove donbuche/drupier_demo</code></pre>',
     ],
     'location' => [
       '#type' => 'markup',
-      '#markup' => '<h2>Location</h2><p><code>web/modules/custom/drupier_demo</code></p>',
+      '#markup' => '<h2>Location</h2><p><code>web/modules/contrib/drupier_demo</code></p>',
     ],
   ];
 }
